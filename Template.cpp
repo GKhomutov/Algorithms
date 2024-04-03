@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 
+#define sz(x) (int)(x).size()
 #define pb push_back
 #define pob pop_back
 #define all(x) (x).begin(), (x).end()
@@ -7,17 +8,41 @@
 #define lb lower_bound
 #define fi first
 #define se second
+#define mineq(x, y) (x) = min((x), (y))
+#define maxeq(x, y) (x) = max((x), (y))
 #define yes cout << "YES\n"
 #define no cout << "NO\n"
 
 using namespace std;
 using ull = unsigned long long;
 using ll = long long;
-using ld = double;
+using ld =long double;
+
+mt19937 rd(chrono::system_clock::now().time_since_epoch().count());
 
 /*--------------------------------------------------IO_FILES-----------------------------------------------*/
 const char *infile = "";
 const char *outfile = "";
+/*---------------------------------------------------DEBUG-------------------------------------------------*/
+#define deb(...) logger(#__VA_ARGS__, __VA_ARGS__)
+template <typename... Args>
+void logger(string vars, Args &&...values) {
+	cout << vars << " = ";
+	string delim = "";
+	(..., (cout << delim << values, delim = ", "));
+	cout << endl;
+}
+template <typename... T> void printer(T &&...args) { ((cout << args << " "), ...); }
+template<typename F>
+auto debfunc(const F& func) {
+    return [func](auto &&...args) { // forward reference
+        cout << "input = ";
+        printer(args...);
+        auto res = func(std::forward<decltype(args)>(args)...);
+        cout << "res = " << res << endl;
+        return res;
+    };
+}
 /*--------------------------------------------------FAST_INP-----------------------------------------------*/
 //#define FAST_INP
 #ifdef FAST_INP
@@ -68,18 +93,16 @@ struct custom_hash {
 /*-----------------------------------------------------CODE------------------------------------------------*/
 
 
-
 void solve()
 {
 	
 }
 
-int main()
+
+signed main()
 {
-	if (*infile != '\0')
-		(void)freopen(infile, "r", stdin);
-	if (*outfile != '\0')
-		(void)freopen(outfile, "w", stdout);
+	if (*infile != '\0') (void)freopen(infile, "r", stdin);
+	if (*outfile != '\0') (void)freopen(outfile, "w", stdout);
 	cin.tie(nullptr);
 	cout.tie(nullptr);
 	ios_base::sync_with_stdio(false);
@@ -87,8 +110,9 @@ int main()
 	cout << fixed;
 
 	int t = 1;
-	cin >> t;
-	while (t--)
+	//cin >> t;
+	while (t--) {
 		solve();
+	}
 	return 0;
 }
