@@ -39,8 +39,8 @@ bool LeftDownCmp(const Vec &u, const Vec &v) { return u.x < v.x || (u.x == v.x &
 Vec operator*(ll k, const Vec &v) { Vec u(k * v.x, k * v.y); return u; }
 istream& operator>>(istream &s, Vec &v) { s >> v.x >> v.y; return s; }
 ostream& operator<<(ostream &s, const Vec &v) { s << v.x << " " << v.y; return s; }
-ll norm(const Vec &v) { return v.x * v.x + v.y * v.y; }
-ld dist(const Vec &a, const Vec &b) { return sqrt(norm(b - a)); }
+ll norm2(const Vec &v) { return v.x * v.x + v.y * v.y; }
+ld dist(const Vec &a, const Vec &b) { return sqrt(norm2(b - a)); }
 bool seg_line_int(const Vec &a, const Vec &b, const Vec &c, const Vec &d) {
     if (c.square(a, d) > 0 && c.square(b, d) > 0 ||
         c.square(a, d) < 0 && c.square(b, d) < 0)
