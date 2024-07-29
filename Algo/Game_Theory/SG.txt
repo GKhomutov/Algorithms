@@ -4,7 +4,7 @@
 // If SG(A) exists, then it's unique
 
 // If A is a symmetric game with perfect information in which the states don't repeat, then SG(A) is well-defined:
-// SG(A) = mex{A_1,..A_k}, where A_i - states that can be entered from the state A
+// SG(A) = mex{SG(A_1), ..., SG(A_k)}, where A_i - states that can be entered from the state A
 // SG(A) == 0  <=>  A is winning for the 2nd player
 // SG(A + B) = SG(A) ^ SG(B)
 
