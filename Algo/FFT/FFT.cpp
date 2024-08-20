@@ -65,7 +65,7 @@ namespace FFT
         }
     }
 
-    vector<int> mult(const vector<int>& aa, const vector<int>& bb) {
+    vector<ld> mult(const vector<int>& aa, const vector<int>& bb) {
         L = 0, N = 1;
         while (N < 2 * max(sz(aa), sz(bb))) N <<= 1, ++L;
         memset(a, 0, sizeof(a[0]) * N);
@@ -92,9 +92,9 @@ namespace FFT
 
         fft(a, true);
         int n = sz(aa) + sz(bb) - 1;
-        vector<int> ans(n);
+        vector<ld> ans(n);
         for (int i = 0; i < n; ++i) {
-            ans[i] = int(a[i].re + 0.5);
+            ans[i] = a[i].re;
         }
         return ans;
     }
