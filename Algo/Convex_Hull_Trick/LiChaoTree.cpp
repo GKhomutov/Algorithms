@@ -25,7 +25,7 @@ struct LiChaoTree
         n = 1;
         while (n < sz) n <<= 1;
         t.resize(2 * n, {0, INF});
-        pt.resize(2 * n);
+        pt.resize(n);
         iota(all(pt), 0ll);
     }
 
@@ -40,9 +40,7 @@ struct LiChaoTree
                unique(all(pt)) == pt.end());
     }
 
-    void add_line(Line line) {
-        int v = 1;
-        int l = 0, r = n;
+    void add_line(Line line, int v, int l, int r) {
         while (v < 2 * n) {
             int m = (l + r) / 2;
             bool lef = line(pt[l]) < t[v](pt[l]);
@@ -58,6 +56,27 @@ struct LiChaoTree
                 l = m;
             }
         }
+    }
+
+    void add_line(Line line) {
+        add_line(line, 1, 0, n);
+    }
+
+    void add_line_seg(int v, int l, int r, Line line, int L, int R) {
+        if (r <= L || R <= l) {
+            return;
+        }
+        if (L <= l && r <= R) {
+            add_line(line, v, l, r);
+            return;
+        }
+        int m = (r + l) / 2;
+        add_line_seg(2 * v, l, m, line, L, R);
+        add_line_seg(2 * v + 1, m, r, line, L, R);
+    }
+
+    void add_line_seg(Line line, int L, int R) {
+        add_line_seg(1, 0, n, line, L, R);
     }
 
     ll get(int i) const {
