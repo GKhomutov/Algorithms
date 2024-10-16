@@ -63,7 +63,7 @@ Node* merge(Node *l, Node *r) {
     }
 }
 
-void insert(Node **root, int x, int i, int ans) {
+void insert(Node **root, int x) {
     Node *t = new Node(x);
     Node *l, *r; split(*root, x, &l, &r);
     *root = merge(l, merge(t, r));
