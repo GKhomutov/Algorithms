@@ -1,58 +1,110 @@
 #include <bits/stdc++.h>
-
+#define all(x) (x).begin(), (x).end()
 using namespace std;
-using ll = long long;
 
+template <class Info, class Tag>
+struct SegTree
+{
+    int n;
+    vector<Info> info;
+    vector<Tag> tag;    // promise for children
+    
+    SegTree() : n(0) {}
+    SegTree(int sz, Info value = Info()) {
+        init(vector<Info>(sz, value));
+    }
 
-// sum_t(1, 0, n, l, r)    --- calculate a[l] + ... + a[r - 1]
-// add_t(1, 0, n, l, r, x) --- do a[i] += x for i in [l, r)
- 
-const int N = 100'057;
-ll t[4 * N];
-ll p[4 * N];
- 
-void push_t(int v, int l, int r) {
-    t[v] += p[v] * (r - l);
-    if (r - l != 1) {
-        p[v << 1] += p[v];
-        p[v << 1 | 1] += p[v];
+    void pull(int v) {
+        info[v] = info[2 * v] + info[2 * v + 1];
     }
-    p[v] = 0;
-}
- 
-void build_t(int v, int l, int r, const vector<ll>& a) {
-    if (r - l == 1) {
-        t[v] = a[l];
-        return;
+    void apply(int v, const Tag &t) {
+        info[v].apply(t);
+        tag[v].apply(t);
     }
-    build_t(   v << 1,        l,     (l + r) >> 1, a);
-    build_t(v << 1 | 1, (l + r) >> 1,       r,     a);
-    t[v] = t[v << 1] + t[v << 1 | 1];
-}
- 
-ll sum_t(int v, int l, int r, int L, int R) {
-    push_t(v, l, r);
-    if (L >= r || l >= R) {
-        return 0LL;
+    void push(int v) {
+        apply(2 * v, tag[v]);
+        apply(2 * v + 1, tag[v]);
+        tag[v] = Tag();
     }
-    if (L <= l && r <= R) {
-        return t[v];
+
+    void init(const vector<Info> &a) {
+        n = 1;
+        while (n < a.size()) n <<= 1;
+        info.assign(2 * n, Info());
+        tag.assign(2 * n, Tag());
+        copy(all(a), info.begin() + n);
+        for (int v = n - 1; v != 0; --v) {
+            pull(v);
+        }
     }
-    return sum_t(   v << 1,        l,    (l + r) >> 1, L, R) +
-           sum_t(v << 1 | 1, (l + r) >> 1,      r,     L, R);
-}
- 
-void add_t(int v, int l, int r, int L, int R, int VL) {
-    push_t(v, l, r);
-    if (L >= r || l >= R) {
-        return;
+
+    void upd(int v, int l, int r, int i, const Info &x) {
+        if (r - l == 1) {
+            info[v] = x;
+            return;
+        }
+        int m = (l + r) / 2;
+        push(v);
+        if (i < m) {
+            upd(2 * v, l, m, i, x);
+        } else {
+            upd(2 * v + 1, m, r, i, x);
+        }
+        pull(v);
     }
-    if (L <= l && r <= R) {
-        p[v] += VL;
-        push_t(v, l, r);
-        return;
+    void upd(int i, const Info &x) {
+        upd(1, 0, n, i, x);
     }
-    add_t(  v << 1,         l,    (l + r) >> 1, L, R, VL);
-    add_t(v << 1 | 1, (l + r) >> 1,      r,     L, R, VL);
-    t[v] = t[v << 1] + t[v << 1 | 1];
+
+    Info rangeQuery(int v, int l, int r, int L, int R) {
+        if (R <= l || L >= r) {
+            return Info();
+        }
+        if (L <= l && r <= R) {
+            return info[v];
+        }
+        push(v);
+        int m = (l + r) / 2;
+        return rangeQuery(2 * v, l, m, L, R) +
+               rangeQuery(2 * v + 1, m, r, L, R);
+    }
+    Info rangeQuery(int L, int R) {
+        return rangeQuery(1, 0, n, L, R);
+    }
+
+    void rangeApply(int v, int l, int r, int L, int R, const Tag &t) {
+        if (R <= l || r <= L) {
+            return;
+        }
+        if (L <= l && r <= R) {
+            apply(v, t);
+            return;
+        }
+        push(v);
+        int m = (l + r) / 2;
+        rangeApply(2 * v, l, m, L, R, t);
+        rangeApply(2 * v + 1, m, r, L, R, t);
+        pull(v);
+    }
+    void rangeApply(int L, int R, const Tag &t) {
+        return rangeApply(1, 0, n, L, R, t);
+    }
+};
+
+struct Tag {
+    int add = 0;
+    void apply(const Tag &t) {
+        add += t.add;
+    }
+};
+
+struct Info {
+    int max = 0;
+    void apply(const Tag &t) {
+        max += t.add;
+    }
+};
+
+Info operator+(const Info &a, const Info &b) {
+    return {max(a.max, b.max)};
 }

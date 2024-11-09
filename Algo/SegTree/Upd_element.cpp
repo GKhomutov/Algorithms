@@ -3,49 +3,53 @@
 using namespace std;
 
 
-template <class T, class Fun = function<T(const T &, const T &)>>
-struct SegTree
-{
-    Fun f;
-    vector<T> t;
+template <class Info>
+struct SegTree {
     int n;
+    vector<Info> info;
 
-    SegTree(int sz, const Fun &g, T default_value = T()) : f(g)
-    {
+    SegTree() : n(0) {}
+    SegTree(const vector<Info> &a) {
         n = 1;
-        while (n < sz) n <<= 1;
-        t.resize(2 * n, default_value);
-    }
-
-    SegTree(vector<T> &a, const Fun &g, T default_value = T()) : SegTree(a.size(), g, default_value)
-    {
-        copy(all(a), t.begin() + n);
-        for (int i = n - 1; i != 0; --i) {
-            t[i] = f(t[i << 1], t[i << 1 | 1]);
+        while (n < a.size()) n <<= 1;
+        info.assign(2 * n, Info());
+        copy(all(a), info.begin() + n);
+        for (int v = n - 1; v != 0; --v) {
+            pull(v);
         }
     }
+    SegTree(int sz, Info value = Info()) : SegTree(vector<Info>(sz, value)) {}
 
-    void upd(int i, const T &x)
-    {
+    void pull(int v) {
+        info[v] = info[2 * v] + info[2 * v + 1];
+    }
+
+    void upd(int i, const Info &x) {
         i += n;
-        t[i] = f(t[i], x);
+        info[i] = x;
         for (i >>= 1; i != 0; i >>= 1) {
-            t[i] = f(t[i << 1], t[i << 1 | 1]);
+            info[i] = info[i << 1] + info[i << 1 | 1];
         }
     }
     
-    // [l, r)
-    T get(int l, int r) const
-    {
-        T resL = t[0], resR = t[0];
+    Info get(int l, int r) const {
+        Info resL = Info(), resR = Info();
         for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
             if (l & 1) {
-                resL = f(resL, t[l++]);
+                resL = resL + info[l++];
             }
             if (r & 1) {
-                resR = f(t[--r], resR);
+                resR = info[--r] + resR;
             }
         }
-        return f(resL, resR);
+        return resL + resR;
     }
 };
+
+struct Info {
+    int max = 0;
+};
+
+Info operator+(const Info &a, const Info &b) {
+    return {max(a.max, b.max)};
+}
