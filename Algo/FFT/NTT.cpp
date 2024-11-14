@@ -44,7 +44,6 @@ namespace NTT {
 				swap(a[i], a[rev[i]]);
 			}
 		}
-
 		for (int lg = 0; lg < L; ++lg) {
 			int bl = (1 << lg);
 			int w = pwm((inv ? WI : W0), 1 << (L - lg - 1), P);
@@ -52,7 +51,7 @@ namespace NTT {
 			assert(pwm(w, 2 * bl, P) == 1);
 			for (int pos = 0; pos < N; pos += bl) {
 				int ww = 1;
-				for (int ptr = 0; ptr < bl; ++ptr, ++pos) {
+				for (int _ = 0; _ < bl; ++_, ++pos) {
 					int tmp = (a[pos] + ll(ww) * a[pos + bl] % P) % P;
 					a[pos + bl] = (a[pos] + P - ll(ww) * a[pos + bl] % P) % P;
 					a[pos] = tmp;
@@ -60,7 +59,6 @@ namespace NTT {
 				}
 			}
 		}
-
 		if (inv) {
 			for (int i = 0; i < N; ++i) {
 				a[i] = ll(a[i]) * IN % P;
